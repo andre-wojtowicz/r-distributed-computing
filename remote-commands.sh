@@ -18,7 +18,7 @@ CONNECTION_LIST_FILE="remote-connection-list.txt"
 HOSTS_SCANNED_FILE="remote-hosts-scanned.txt"
 DEBIAN_PACKAGES_TO_INSTALL="build-essential gfortran ed htop libxml2-dev ca-certificates curl libcurl4-openssl-dev gdebi-core sshpass default-jre default-jdk libpcre3-dev zlib1g-dev liblzma-dev libbz2-dev libicu-dev"
 REMOTE_DETECT_LOGICAL_CPUS="FALSE"
-MIN_HOSTS=100
+MIN_HOSTS=1
 
 SHELL_SCRIPT=$(basename $0)
 LOG_STEPS="logs/${SHELL_SCRIPT%.*}".log
@@ -457,6 +457,7 @@ my_configure_hosts()
     hosts_scan_available
     hosts_push_shell_script
     dump_project_r_files
+    dump_r_libraries
     hosts_push_project_r_files
     hosts_install_env
     hosts_install_mro
@@ -472,11 +473,12 @@ configure_hosts()
     hosts_push_ssh_key
     hosts_push_shell_script
     dump_project_r_files
+    dump_r_libraries
     hosts_push_project_r_files
     hosts_install_env
     hosts_install_mro
-    hosts_install_r_libraries
-        #hosts_push_r_libraries_dump
+    hosts_push_r_libraries_dump
+        #hosts_install_r_libraries
     make_remote_connection_list_nproc
         #make_remote_connection_list_single
 }

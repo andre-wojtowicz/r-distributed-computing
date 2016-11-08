@@ -35,3 +35,5 @@ vignettes/*.pdf
 
 logs/*
 .R.user
+*.txt
+ssh/*

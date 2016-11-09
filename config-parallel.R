@@ -3,10 +3,6 @@
 PARALLEL.USED.METHOD               = "REMOTE" # LOCAL or REMOTE
 PARALLEL.DISABLE.MKL.THREADS       = TRUE
 
-PARALLEL.NO.JOBS.PER.CHUNK         = 30 # no. jobs per worker in step 6-2
-PARALLEL.NO.JOBS.MULTIPLIER        = 2  # no. jobs multiplier per job sequence
-                                        # to minimize worker time of waitiing for
-                                        # remaining workers in step 6-2
 
 # local
 PARALLEL.LOCAL.METHOD              = "PSOCK"

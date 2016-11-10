@@ -1,6 +1,6 @@
 # R distributed computing
 
-In this repository I show a practical solution to massive distributed computing in R. I have successfully tested this approach in my research with ~200 remote hosts and ~800 remote connections. Brief examples concern [caret](https://topepo.github.io/caret/) package for creating predictive models and [foreach](https://cran.r-project.org/web/packages/doParallel/index.html) loop for more general parallel computing. 
+In this repository I show a practical solution to massive distributed computing in R. I have successfully tested this approach in my research with ~200 remote hosts (and ~800 remote connections) on computers located in [Faculty of Mathematics and Computer Science, Adam Mickiewicz University in Poznań](https://translate.google.com/translate?hl=pl&sl=pl&tl=en&u=https://laboratoria.wmi.amu.edu.pl/Laboratoria). Brief examples concern [caret](https://topepo.github.io/caret/) package for creating predictive models and [foreach](https://cran.r-project.org/web/packages/doParallel/index.html) loop for more general parallel computing. 
 
 The solution is based on:
  * [Microsoft R Open](http://mran.microsoft.com/), 
@@ -88,6 +88,7 @@ The `configure_hosts` is a short name for basic execution order:
  1. `generate_ssh_keys` - generates ssh keys to communicate with hosts (see `SSH_*` variables),
  1. `hosts_push_ssh_key` - pushes the keys to hosts and disables password authentication,
  1. `hosts_push_shell_script` - pushes the bash script to hosts,
+ 1. `hosts_enable_swap` - enables on hosts swap defined in `SWAP_PART`,
  1. `dump_project_r_files` - gathers all R project files used in the project,
  1. `dump_r_libraries` - gathers all R libraries in `~/.checkpoint` directory,
  1. `hosts_push_project_r_files` - pushes gathered R project files to hosts,
@@ -106,7 +107,7 @@ If you want to make only one connection per node (regardless number of cores), y
 
 Alternatively, instead of installing soft on [WMI rescue](http://rescue.wmi.amu.edu.pl), you can create and boot on hosts your own customized distro.
 
-You can investigate hosts install logs through `hosts_check_install_log_*` functions. You can also check and clean remote worker logs through `hosts_check_worker_log` and `hosts_clean_worker_log` procedures, respectively.
+You can investigate hosts install logs through `hosts_check_install_log_*` functions. You can also check and clean remote worker logs through `hosts_check_worker_log` and `hosts_clean_worker_log` procedures, respectively. Moreover, you can investigate dmesg through `hosts_check_worker_dmesg`.
 
 The functions (excluding `hosts_scan_available`) stop the script if any part of the procedure fails.
 

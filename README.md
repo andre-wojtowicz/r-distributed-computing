@@ -1,6 +1,6 @@
 # R distributed computing
 
-In this repository I show a practical solution to massive distributed computing in R. I have successfully tested this approach in my research with ~200 remote hosts (and ~800 remote connections) on computers located in [Faculty of Mathematics and Computer Science, Adam Mickiewicz University in Poznań](https://translate.google.com/translate?hl=pl&sl=pl&tl=en&u=https://laboratoria.wmi.amu.edu.pl/Laboratoria). Brief examples concern [caret](https://topepo.github.io/caret/) package for creating predictive models and [foreach](https://cran.r-project.org/web/packages/doParallel/index.html) loop for more general parallel computing. 
+In this repository I show a practical solution to massive distributed computing in R. I have successfully tested this approach in my research with ~220 remote hosts (and ~800 CPUs) on computers located in [Faculty of Mathematics and Computer Science, Adam Mickiewicz University in Poznań](https://translate.google.com/translate?hl=pl&sl=pl&tl=en&u=https://laboratoria.wmi.amu.edu.pl/Laboratoria). Brief examples concern [caret](https://topepo.github.io/caret/) package for creating predictive models and [foreach](https://cran.r-project.org/web/packages/doParallel/index.html) loop for more general parallel computing. 
 
 The solution is based on:
  * [Microsoft R Open](http://mran.microsoft.com/), 

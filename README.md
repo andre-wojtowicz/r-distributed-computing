@@ -87,12 +87,14 @@ The `configure_hosts` is a short name for basic execution order:
 
  1. `generate_ssh_keys` - generates ssh keys to communicate with hosts (see `SSH_*` variables),
  1. `hosts_push_ssh_key` - pushes the keys to hosts and disables password authentication,
+ 1. `hosts_change_password` - changes on hosts default password to user-defined in `NEW_PASS`,
  1. `hosts_push_shell_script` - pushes the bash script to hosts,
  1. `hosts_enable_swap` - enables on hosts swap defined in `SWAP_PART`,
  1. `dump_project_r_files` - gathers all R project files used in the project,
  1. `dump_r_libraries` - gathers all R libraries in `~/.checkpoint` directory,
  1. `hosts_push_project_r_files` - pushes gathered R project files to hosts,
  1. `hosts_install_env` - updates and installs packages defined in `DEBIAN_PACKAGES_TO_INSTALL`,
+ 1. `hosts_set_power_off` - sets power off time as defined in `POWEROFF_TIME`,
  1. `hosts_install_mro` - installs R defined in `MRO_*` variables,
  1. `hosts_push_r_libraries_dump` - pushes R project files to hosts,
  1. `make_remote_connection_list_nproc` - creates connection list file for R, defined in `HOSTS_FILE` (default: `remote-hosts.txt`).
@@ -107,7 +109,7 @@ If you want to make only one connection per node (regardless number of cores), y
 
 Alternatively, instead of installing soft on [WMI rescue](http://rescue.wmi.amu.edu.pl), you can create and boot on hosts your own customized distro.
 
-You can investigate hosts install logs through `hosts_check_install_log_*` functions. You can also check and clean remote worker logs through `hosts_check_worker_log` and `hosts_clean_worker_log` procedures, respectively. Moreover, you can investigate dmesg through `hosts_check_worker_dmesg`.
+You can investigate hosts install logs through `hosts_check_install_log_*` functions. You can also check and clean remote worker logs through `hosts_check_worker_log` and `hosts_clean_worker_log` procedures, respectively. Moreover, you can investigate dmesg through `hosts_check_worker_dmesg`. The hosts can be invoked to power off through `hosts_power_off`.
 
 The functions (excluding `hosts_scan_available`) stop the script if any part of the procedure fails.
 

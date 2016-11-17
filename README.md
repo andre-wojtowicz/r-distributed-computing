@@ -118,7 +118,8 @@ The functions (excluding `hosts_scan_available`) stop the script if any part of 
 In the `config.R` file you may customize `checkpoint` library configuration and the logging system.
 
 In the `config-parallel.R` you can:
- * switch between parallel computing methods (`PARALLEL.USED.METHOD` by default is `REMOTE` but for testing you can change it to `LOCAL`, so that all calculations will be done on the server); for `LOCAL` the method defined in `PARALLEL.LOCAL.METHOD` might be `PSOCK` (default) or `FORK`.
+ * switch between parallel computing methods (`PARALLEL.USED.METHOD` by default is `REMOTE` but for testing you can change it to `LOCAL`, so that all calculations will be done on the server); for `LOCAL` the method defined in `PARALLEL.LOCAL.METHOD` might be `PSOCK` (default) or `FORK`,
+ * set or disable priority for the worker processes through `PARALLEL.RENICE` variable,
  * customize remote R session invoking parameters through `PARALLEL.REMOTE.*` variables,
  * worker logs file names are defined in `PARALLEL.*.SLAVE.OUT.FILE` and are unique among whole computing cluster.
 

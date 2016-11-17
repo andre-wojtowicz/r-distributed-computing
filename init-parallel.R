@@ -15,7 +15,9 @@ cl = if (PARALLEL.USED.METHOD == "LOCAL")
         make.psock.cluster(
             names              = PARALLEL.LOCAL.NODES,
             connection.timeout = PARALLEL.LOCAL.CONNECTION.TIMEOUT,
-            outfile            = PARALLEL.LOCAL.SLAVE.OUT.FILE)
+            outfile            = PARALLEL.LOCAL.SLAVE.OUT.FILE,
+            renice             = PARALLEL.RENICE
+            )
     } else if (PARALLEL.LOCAL.METHOD == "FORK")
     {
         flog.info("Creating local FORK cluster")
@@ -49,7 +51,8 @@ cl = if (PARALLEL.USED.METHOD == "LOCAL")
             rscript            = PARALLEL.REMOTE.SLAVE.RSCRIPT.PATH,
             homogeneous        = PARALLEL.REMOTE.SLAVE.HOMOGENEOUS,
             methods            = PARALLEL.REMOTE.SLAVE.METHODS,
-            useXDR             = PARALLEL.REMOTE.SLAVE.USEXDR)
+            useXDR             = PARALLEL.REMOTE.SLAVE.USEXDR,
+            renice             = PARALLEL.RENICE)
     }
     else {
         stop.script(paste("Unknown remote parallel cluster method:",

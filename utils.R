@@ -17,10 +17,11 @@ stop.script = function(error)
     if (is.character(error))
     {
         flog.error(error)
+    } else if ("message" %in% attributes(x)$names) {
+        flog.error(error$message)
     } else {
-        flog.error(getMessage(error))
+        try(flog.error(getMessage(error)), silent = TRUE)
     }
 
     throw(error)
 }
-

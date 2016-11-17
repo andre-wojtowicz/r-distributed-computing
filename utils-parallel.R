@@ -33,9 +33,9 @@ make.psock.cluster = function(names, connection.timeout, ...)
 
         tryCatch({
             cl.node =
-                evalWithTimeout(parallel:::newPSOCKnode(names[[i]],
-                                                        options = options.copy,
-                                                        rank = i),
+                evalWithTimeout(new.psock.node(names[[i]],
+                                               options = options.copy,
+                                               rank = i),
                                 timeout = connection.timeout,
                                 onTimeout = "error")
             cl[[i]] = cl.node
@@ -77,6 +77,65 @@ make.psock.cluster = function(names, connection.timeout, ...)
 
     class(cl.filtered) = c("SOCKcluster", "cluster")
     cl.filtered
+}
+
+new.psock.node = function(machine = "localhost", ...,
+                          options = parallel:::defaultClusterOptions, rank)
+{
+    options <- parallel:::addClusterOptions(options, list(...))
+    if (is.list(machine)) {
+        options <- parallel:::addClusterOptions(options, machine)
+        machine <- machine$host
+    }
+    outfile <- parallel:::getClusterOption("outfile", options)
+    master <- if (machine == "localhost")
+        "localhost"
+    else parallel:::getClusterOption("master", options)
+    port <- parallel:::getClusterOption("port", options)
+    manual <- parallel:::getClusterOption("manual", options)
+    timeout <- parallel:::getClusterOption("timeout", options)
+    methods <- parallel:::getClusterOption("methods", options)
+    useXDR <- parallel:::getClusterOption("useXDR", options)
+    env <- paste0("MASTER=", master, " PORT=", port, " OUT=",
+                  outfile, " TIMEOUT=", timeout, " XDR=", useXDR)
+    arg <- "parallel:::.slaveRSOCK()"
+    rscript <- if (parallel:::getClusterOption("homogeneous", options)) {
+        shQuote(parallel:::getClusterOption("rscript", options))
+    }
+    else "Rscript"
+    rscript_args <- parallel:::getClusterOption("rscript_args", options)
+    if (methods)
+        rscript_args <- c("--default-packages=datasets,utils,grDevices,graphics,stats,methods",
+                          rscript_args)
+    cmd <- if (length(rscript_args))
+        paste(rscript, paste(rscript_args, collapse = " "), "-e",
+              shQuote(arg), env)
+    else paste(rscript, "-e", shQuote(arg), env)
+    renice <- parallel:::getClusterOption("renice", options)
+    if (!is.na(renice) && renice)
+        cmd <- sprintf("nice -%d %s", as.integer(renice), cmd)
+    if (manual) {
+        cat("Manually start worker on", machine, "with\n    ",
+            cmd, "\n")
+        utils::flush.console()
+    }
+    else {
+        if (machine != "localhost") {
+            rshcmd <- parallel:::getClusterOption("rshcmd", options)
+            user <- parallel:::getClusterOption("user", options)
+            cmd <- shQuote(cmd)
+            cmd <- paste(rshcmd, "-l", user, machine, cmd)
+        }
+        if (.Platform$OS.type == "windows") {
+            system(cmd, wait = FALSE, input = "")
+        }
+        else system(cmd, wait = FALSE)
+    }
+    con <- socketConnection("localhost", port = port, server = TRUE,
+                            blocking = TRUE, open = "a+b", timeout = timeout)
+    structure(list(con = con, host = machine, rank = rank), class = if (useXDR)
+        "SOCKnode"
+        else "SOCK0node")
 }
 
 stop.cluster = function(cl.to.stop = cl)

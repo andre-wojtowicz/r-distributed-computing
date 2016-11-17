@@ -16,10 +16,12 @@ MRO_INSTALL_URL="https://mran.microsoft.com/install"
 HOSTS_FILE="remote-hosts.txt"
 CONNECTION_LIST_FILE="remote-connection-list.txt"
 HOSTS_SCANNED_FILE="remote-hosts-scanned.txt"
-DEBIAN_PACKAGES_TO_INSTALL="build-essential gfortran ed htop libxml2-dev ca-certificates curl libcurl4-openssl-dev gdebi-core sshpass default-jre default-jdk libpcre3-dev zlib1g-dev liblzma-dev libbz2-dev libicu-dev"
+DEBIAN_PACKAGES_TO_INSTALL="build-essential gfortran ed htop libxml2-dev ca-certificates curl libcurl4-openssl-dev gdebi-core sshpass default-jre default-jdk libpcre3-dev zlib1g-dev liblzma-dev libbz2-dev libicu-dev at"
 REMOTE_DETECT_LOGICAL_CPUS="FALSE"
 MIN_HOSTS=1
 SWAP_PART="/dev/mapper/linux-swap"
+NEW_PASS=""
+POWEROFF_TIME="7:00"
 
 SHELL_SCRIPT=$(basename $0)
 LOG_STEPS="logs/${SHELL_SCRIPT%.*}".log
@@ -238,6 +240,28 @@ hosts_push_ssh_key()
         try sshpass -p ${SSHPASS_PWD} scp ${SSH_OPTIONS} ${SSH_KEYS_DIR}/${SSH_KEY_PUB} ${SSH_USER}@${host}:~/.ssh
         try sshpass -p ${SSHPASS_PWD} ssh ${SSH_OPTIONS} ${SSH_USER}@${host} "cat ~/.ssh/${SSH_KEY_PUB} >> ~/.ssh/authorized_keys"
         try sshpass -p ${SSHPASS_PWD} ssh ${SSH_OPTIONS} ${SSH_USER}@${host} "sed -i -e 's/#PasswordAuthentication yes/PasswordAuthentication no/ig' /etc/ssh/sshd_config; service ssh restart"
+        next
+    done
+    check_if_command_error
+}
+
+hosts_change_password()
+{
+    info "Changing user password on hosts"
+    for host in "${HOSTS_ARRAY[@]}"; do
+        step "-- ${host}"
+        try ssh ${SSH_OPTIONS} -i ${SSH_KEYS_DIR}/${SSH_KEY_PRIV} ${SSH_USER}@${host} "chpasswd <<< $SSH_USER:$NEW_PASS"
+        next
+    done
+    check_if_command_error
+}
+
+hosts_set_power_off()
+{
+    info "Setting power-off on hosts"
+    for host in "${HOSTS_ARRAY[@]}"; do
+        step "-- ${host}"
+        try ssh ${SSH_OPTIONS} -i ${SSH_KEYS_DIR}/${SSH_KEY_PRIV} ${SSH_USER}@${host} "at $POWEROFF_TIME <<< poweroff &> /dev/null"
         next
     done
     check_if_command_error
@@ -480,11 +504,13 @@ my_configure_hosts()
     #generate_ssh_keys
     #hosts_push_ssh_key
     hosts_scan_available
+    hosts_change_password
     hosts_push_shell_script
     dump_project_r_files
     dump_r_libraries
     hosts_push_project_r_files
     hosts_install_env
+    hosts_set_power_off
     hosts_install_mro
     #hosts_install_r_libraries
         hosts_push_r_libraries_dump
@@ -496,18 +522,26 @@ configure_hosts()
 {
     generate_ssh_keys
     hosts_push_ssh_key
+    hosts_change_password
     hosts_push_shell_script
     hosts_enable_swap
     dump_project_r_files
     dump_r_libraries
     hosts_push_project_r_files
     hosts_install_env
+    hosts_set_power_off
     hosts_install_mro
     hosts_push_r_libraries_dump
         #hosts_install_r_libraries
     make_remote_connection_list_nproc
         #make_remote_connection_list_single
 }
+
+# check if new password is set
+
+if [ "$NEW_PASS" == "" ]; then
+    warn "Empty new password"
+fi
 
 # read hosts from file or stdin
 

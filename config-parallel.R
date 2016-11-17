@@ -3,6 +3,7 @@
 PARALLEL.USED.METHOD               = "REMOTE" # LOCAL or REMOTE
 PARALLEL.DISABLE.MKL.THREADS       = TRUE
 
+PARALLEL.RENICE                    = 19 # [-20; 19] or NA
 
 # local
 PARALLEL.LOCAL.METHOD              = "PSOCK"

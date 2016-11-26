@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# working with WMI Rescue - small Linux image based on 
+# working with WMI Rescue - small Linux image based on
 # Debian distribution; see http://rescue.wmi.amu.edu.pl
 
 # config
@@ -309,7 +309,18 @@ hosts_enable_swap()
     info "Enabling swap on hosts"
     for host in "${HOSTS_ARRAY[@]}"; do
         step "-- ${host}"
-        try ssh ${SSH_OPTIONS} -i ${SSH_KEYS_DIR}/${SSH_KEY_PRIV} ${SSH_USER}@${host} "swapon $SWAP_PART"
+        try ssh ${SSH_OPTIONS} -i ${SSH_KEYS_DIR}/${SSH_KEY_PRIV} ${SSH_USER}@${host} "if [ \$(lvs | grep -P 'swap(.*)-wi--' | wc -l) -eq 1 ]; then vgchange -a y linux > /dev/null; fi ;swapon $SWAP_PART"
+        next
+    done
+    check_if_command_error
+}
+
+hosts_disable_swap()
+{
+    info "Disabling swap on hosts"
+    for host in "${HOSTS_ARRAY[@]}"; do
+        step "-- ${host}"
+        try ssh ${SSH_OPTIONS} -i ${SSH_KEYS_DIR}/${SSH_KEY_PRIV} ${SSH_USER}@${host} "swapoff -a"
         next
     done
     check_if_command_error
@@ -501,21 +512,15 @@ check_if_command_error()
 
 my_configure_hosts()
 {
-    #generate_ssh_keys
-    #hosts_push_ssh_key
     hosts_scan_available
-    hosts_change_password
     hosts_push_shell_script
     dump_project_r_files
     dump_r_libraries
     hosts_push_project_r_files
     hosts_install_env
-    hosts_set_power_off
     hosts_install_mro
-    #hosts_install_r_libraries
-        hosts_push_r_libraries_dump
+    hosts_push_r_libraries_dump
     make_remote_connection_list_nproc
-        #make_remote_connection_list_single
 }
 
 configure_hosts()
